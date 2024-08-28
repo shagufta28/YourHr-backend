@@ -2,7 +2,7 @@ const express = require('express');
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const upload = require('./multerStorageCloudinary'); // Import your multer setup
+const upload = require('../multerStorageCloudinary'); // Import your multer setup
 
 const router = express.Router();
 
