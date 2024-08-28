@@ -8,24 +8,28 @@ const router = express.Router();
 
 // Route to handle sign-up
 router.post('/signup', upload.single('resume'), async (req, res) => {
-  try {
-    const { name, email, password, phoneNumber, qualifications } = req.body;
+    try {
+        console.log("Processing user signup...");
 
-    // Upload the resume to Cloudinary (assuming you have a field named 'resume' for the file)
-    const result = await cloudinary.uploader.upload(req.file.path);
-    const resumeUrl = result.secure_url; // Full URL from Cloudinary
+        const { name, email, password, phoneNumber, qualifications } = req.body;
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+        // Upload the resume to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path);
+        console.log("Resume uploaded successfully:", result);
 
-    const newUser = new User({ name, email, password: hashedPassword,   
- phoneNumber, qualifications, resume: resumeUrl });
-    await newUser.save();
+        const resumeUrl = result.secure_url;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        console.log("Password hashed successfully.");
 
-    res.status(201).json();
-  } catch (error) {
-    res.status(500).json({ message: 'Error signing up user', error });
-  }
+        const newUser = new User({ name, email, password: hashedPassword, phoneNumber, qualifications, resume: resumeUrl });
+        await newUser.save();
+
+        console.log("User saved successfully.");
+        res.status(201).json({ message: "User registered successfully" });
+    } catch (error) {
+        console.error("Error during signup:", error); // Detailed error logging
+        res.status(500).json({ message: 'Error signing up user', error });
+    }
 });
 
 // Route to handle login
