@@ -3,7 +3,7 @@ const express = require('express');
 const multer = require('multer');
 const User = require('../models/User');
 const router = express.Router();
-const bcrypt  = require('bcrypt');
+const bcrypt  = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Multer setup for file uploads
