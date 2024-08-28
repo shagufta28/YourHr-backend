@@ -13,9 +13,7 @@ router.post('/signup', upload.single('resume'), async (req, res) => {
 
         // Upload the resume to Cloudinary
         const result = await cloudinary.uploader.upload(req.file.path);
-
-        // Extract the URL of the uploaded resume
-        const resumeUrl = result.secure_url;
+        const resumeUrl = result.secure_url; // Full URL from Cloudinary
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -67,6 +65,7 @@ router.get('/user', async (req, res) => {
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
+        // Send user data, including resume URL
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching user data', error });
