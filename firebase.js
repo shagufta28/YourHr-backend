@@ -1,7 +1,7 @@
 // backend/firebase.js
 const { initializeApp } = require('firebase/app');
-const { getStorage } = require('firebase/storage');
-const { ref, uploadBytes, getDownloadURL } = require('firebase/storage');
+const { getStorage, ref, uploadBytes, getDownloadURL } = require('firebase/storage');
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyDkOf_mHtubyKgcnZT_Qej8KuyUzw3BkRw",
@@ -14,7 +14,6 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const firebaseApp = initializeApp(firebaseConfig);
-const storage = getStorage(firebaseApp);
-
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
 module.exports = { storage, ref, uploadBytes, getDownloadURL };

@@ -1,33 +1,28 @@
-// backend/routes/userRoutes.js
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const multer = require('multer');
-const { ref, uploadBytes, getDownloadURL } = require('../firebase'); // Firebase functions
-const { storage } = require('../firebase'); // Firebase storage
+const { ref, uploadBytes, getDownloadURL } = require('../firebase'); // Adjust path as needed
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() }); // Use multer's memory storage
 
-// Sign-up route
+const upload = multer({ storage: multer.memoryStorage() }); // Use memory storage to handle file data
+
 router.post('/signup', upload.single('resume'), async (req, res) => {
     try {
         const { name, email, password, phoneNumber, qualifications } = req.body;
+        const file = req.file;
 
-        // Hash the password
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        let resumeUrl = null;
-
-        // Upload the resume to Firebase Storage if it exists
-        if (req.file) {
-            const storageRef = ref(storage, `resumes/${Date.now()}_${req.file.originalname}`);
-            await uploadBytes(storageRef, req.file.buffer);
-            resumeUrl = await getDownloadURL(storageRef); // Get the downloadable URL
+        if (!file) {
+            return res.status(400).json({ message: 'Resume is required' });
         }
 
-        // Save the new user to MongoDB
+        const storageRef = ref(storage, `resumes/${Date.now()}_${file.originalname}`);
+        const snapshot = await uploadBytes(storageRef, file.buffer);
+        const resumeUrl = await getDownloadURL(snapshot.ref);
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const newUser = new User({
             name,
             email,
@@ -36,14 +31,15 @@ router.post('/signup', upload.single('resume'), async (req, res) => {
             qualifications,
             resume: resumeUrl,
         });
-        await newUser.save();
 
+        await newUser.save();
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
         console.error('Error during signup:', error);
         res.status(500).json({ message: 'Error signing up user', error });
     }
 });
+
 
 // Login route
 router.post('/login', async (req, res) => {
