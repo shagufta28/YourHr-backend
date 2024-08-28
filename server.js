@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const userRoutes = require('./routes/userRoutes');
 const cors = require('cors');
-const path = require('path');
+
 const config = require('./config'); // Import the config
 
 const app = express();
@@ -16,7 +16,7 @@ mongoose.connect(config.mongoURI, {
 }).then(() => console.log('MongoDB connected'))
   .catch((err) => console.log(err));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 app.use('/api', userRoutes);
 

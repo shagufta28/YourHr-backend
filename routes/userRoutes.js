@@ -10,16 +10,17 @@ const router = express.Router();
 router.post('/signup', upload.single('resume'), async (req, res) => {
     try {
         const { name, email, password, phoneNumber, qualifications } = req.body;
-        const resume = req.file?.path; // Cloudinary URL of the uploaded file
 
-        if (!resume) {
-            return res.status(400).json({ message: 'Resume is required' });
-        }
+        // Upload the resume to Cloudinary
+        const result = await cloudinary.uploader.upload(req.file.path);
+
+        // Extract the URL of the uploaded resume
+        const resumeUrl = result.secure_url;
 
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        const newUser = new User({ name, email, password: hashedPassword, phoneNumber, qualifications, resume });
+        const newUser = new User({ name, email, password: hashedPassword, phoneNumber, qualifications, resume: resumeUrl });
         await newUser.save();
 
         res.status(201).json();
