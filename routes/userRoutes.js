@@ -12,6 +12,7 @@ router.post('/signup', async (req, res) => {
         // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Create a new user with the resume URL or path
         const newUser = new User({ name, email, password: hashedPassword, phoneNumber, qualifications, resume });
         await newUser.save();
 
@@ -60,6 +61,7 @@ router.get('/user', async (req, res) => {
 
         if (!user) return res.status(404).json({ message: 'User not found' });
 
+        // Return user data, including resume URL/path
         res.status(200).json(user);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching user data', error });
